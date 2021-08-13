@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Score } from "./Score";
 
 @ObjectType()
 @Entity('users')
@@ -23,6 +24,7 @@ export class User extends BaseEntity {
     @Column()
     password!: string;
 
-    // @OneToMany(() => GolfScore, score => score.creator)
-    // scores: Score[];
+    @Field(() => Score, {nullable: true})
+    @OneToMany(() => Score, score => score.player)
+    scores: Score[];
 }

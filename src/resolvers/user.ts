@@ -38,6 +38,7 @@ export class UserResolver {
         @Arg('password') password: string,
         @Ctx() { req }: MyContext,
     ): Promise<UserResponse> {
+        console.log('registering')
         if (username.length < 3)
             return {
                 errors: [

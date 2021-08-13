@@ -14,6 +14,10 @@ import { UserResolver } from './resolvers/user';
 import { User } from './entities/User';
 import { Course } from './entities/Course';
 import { CourseResolver } from './resolvers/course';
+import { Score } from './entities/Score';
+import { ScoreResolver } from './resolvers/score';
+import { createUserLoader } from './util/createUserResolver';
+import { createCourseLoader } from './util/createCourseResolver';
 
 const {
     POSTGRES_USERNAME,
@@ -32,7 +36,7 @@ const main = async () => {
         password: POSTGRES_PASSWORD,
         logging: true,
         synchronize: true,
-        entities: [User, Course],
+        entities: [User, Course, Score],
     });
 
     const app = express();
@@ -72,13 +76,15 @@ const main = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [ UserResolver, CourseResolver ],
+            resolvers: [ UserResolver, CourseResolver, ScoreResolver ],
             validate: false,
         }),
         context: ({ req, res }) => ({
             req,
             res,
             redis,
+            userLoader: createUserLoader(),
+            courseLoader: createCourseLoader(),
         }),
     });
     // await apolloServer.start()

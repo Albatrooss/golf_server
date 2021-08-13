@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Score } from "./Score";
 
 @ObjectType()
 @Entity()
@@ -164,6 +165,6 @@ export class Course extends BaseEntity {
     @Column()
     hdc18: number;
 
-    // @OneToMany(() => GolfScore, score => score.creator)
-    // scores: Score[];
+    @OneToMany(() => Score, score => score.course)
+    scores: Score[];
 }

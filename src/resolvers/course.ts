@@ -1,9 +1,6 @@
 import { InputType, Query, Resolver } from 'type-graphql';
-import { User } from '../entities/User';
 import { Arg, Ctx, Field, Mutation, ObjectType } from 'type-graphql';
 import { MyContext } from '../types';
-import argon from 'argon2';
-``;
 import { getConnection } from 'typeorm';
 import { Course } from '../entities/Course';
 import { FieldError } from './user';
@@ -106,9 +103,29 @@ class CoursesResponse {
 
 @Resolver(Course)
 export class CourseResolver {
+    @Query(() => CourseResponse)
+    async course(
+        @Arg('courseId') courseId: number,
+        @Ctx() { req }: MyContext,
+    ): Promise<CourseResponse> {
+        if (!req.session.userId) {
+            return {
+                errors: [
+                    {
+                        field: 'error',
+                        message: 'Must be logged in to do this',
+                    },
+                ],
+            };
+        }
+        const course = await Course.findOne(courseId);
+        return { course };
+    }
+
     @Query(() => CoursesResponse)
     async allCourses(@Ctx() { req }: MyContext): Promise<CoursesResponse> {
         if (!req.session.userId) {
+            console.log('duh');
             return {
                 errors: [
                     {
