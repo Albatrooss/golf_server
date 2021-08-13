@@ -88,7 +88,7 @@ class CourseResponse {
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 
-    @Field(() => Course)
+    @Field(() => Course, { nullable: true })
     course?: Course;
 }
 
@@ -97,7 +97,7 @@ class CoursesResponse {
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 
-    @Field(() => [Course])
+    @Field(() => [Course], { nullable: true })
     courses?: Course[];
 }
 
@@ -125,7 +125,6 @@ export class CourseResolver {
     @Query(() => CoursesResponse)
     async allCourses(@Ctx() { req }: MyContext): Promise<CoursesResponse> {
         if (!req.session.userId) {
-            console.log('duh');
             return {
                 errors: [
                     {
