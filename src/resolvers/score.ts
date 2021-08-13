@@ -55,7 +55,7 @@ class ScoreResponse {
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 
-    @Field(() => Score)
+    @Field(() => Score, { nullable: true })
     score?: Score;
 }
 
@@ -64,7 +64,7 @@ class ScoresResponse {
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 
-    @Field(() => [Score])
+    @Field(() => [Score], { nullable: true })
     scores?: Score[];
 }
 
