@@ -4,6 +4,7 @@ import { Arg, Ctx, Field, Mutation, ObjectType } from 'type-graphql';
 import { MyContext } from '../types';
 import argon from 'argon2';
 import { getConnection } from 'typeorm';
+import { COOKIE_NAME } from '../constants';
 
 @ObjectType()
 export class FieldError {
@@ -38,7 +39,7 @@ export class UserResolver {
         @Arg('password') password: string,
         @Ctx() { req }: MyContext,
     ): Promise<UserResponse> {
-        console.log('registering')
+        username = username.trim().toLowerCase();
         if (username.length < 3)
             return {
                 errors: [
@@ -101,6 +102,7 @@ export class UserResolver {
         @Arg('password') password: string,
         @Ctx() { req }: MyContext,
     ): Promise<UserResponse> {
+        username = username.trim().toLowerCase();
         const user = await User.findOne({ username });
         if (!user)
             return {
@@ -120,5 +122,21 @@ export class UserResolver {
         }
         req.session.userId = user.id;
         return { user };
+    }
+
+    @Mutation(() => Boolean)
+    logout(@Ctx() { req, res }: MyContext) {
+        return new Promise((resolve) =>
+            req.session.destroy((err) => {
+            res.clearCookie(COOKIE_NAME);
+            if (err) {
+                console.log(err);
+                resolve(false);
+                return;
+            }
+    
+            resolve(true);
+            })
+        );
     }
 }

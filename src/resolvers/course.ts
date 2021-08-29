@@ -1,108 +1,69 @@
-import { InputType, Query, Resolver } from 'type-graphql';
-import { Arg, Ctx, Field, Mutation, ObjectType } from 'type-graphql';
+import { FieldResolver, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Ctx, Mutation } from 'type-graphql';
 import { MyContext } from '../types';
 import { getConnection } from 'typeorm';
 import { Course } from '../entities/Course';
-import { FieldError } from './user';
-
-@InputType()
-export class CourseOptions {
-    @Field()
-    name: string;
-    @Field()
-    par1: number;
-    @Field()
-    par2: number;
-    @Field()
-    par3: number;
-    @Field()
-    par4: number;
-    @Field()
-    par5: number;
-    @Field()
-    par6: number;
-    @Field()
-    par7: number;
-    @Field()
-    par8: number;
-    @Field()
-    par9: number;
-    @Field()
-    par10: number;
-    @Field()
-    par11: number;
-    @Field()
-    par12: number;
-    @Field()
-    par13: number;
-    @Field()
-    par14: number;
-    @Field()
-    par15: number;
-    @Field()
-    par16: number;
-    @Field()
-    par17: number;
-    @Field()
-    par18: number;
-    @Field()
-    hdc1?: number;
-    @Field()
-    hdc2?: number;
-    @Field()
-    hdc3?: number;
-    @Field()
-    hdc4?: number;
-    @Field()
-    hdc5?: number;
-    @Field()
-    hdc6?: number;
-    @Field()
-    hdc7?: number;
-    @Field()
-    hdc8?: number;
-    @Field()
-    hdc9?: number;
-    @Field()
-    hdc10?: number;
-    @Field()
-    hdc11?: number;
-    @Field()
-    hdc12?: number;
-    @Field()
-    hdc13?: number;
-    @Field()
-    hdc14?: number;
-    @Field()
-    hdc15?: number;
-    @Field()
-    hdc16?: number;
-    @Field()
-    hdc17?: number;
-    @Field()
-    hdc18?: number;
-}
-
-@ObjectType()
-class CourseResponse {
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
-
-    @Field(() => Course, { nullable: true })
-    course?: Course;
-}
-
-@ObjectType()
-class CoursesResponse {
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
-
-    @Field(() => [Course], { nullable: true })
-    courses?: Course[];
-}
+import { NineData, CourseResponse, CoursesResponse, CourseOptions } from './types';
 
 @Resolver(Course)
 export class CourseResolver {
+    @FieldResolver(() => NineData)
+    front(@Root() course: Course): NineData {
+        return {
+            par: [
+                course.par1,
+                course.par2,
+                course.par3,
+                course.par4,
+                course.par5,
+                course.par6,
+                course.par7,
+                course.par8,
+                course.par9,
+            ],
+            hdc: [
+                course.hdc1,
+                course.hdc2,
+                course.hdc3,
+                course.hdc4,
+                course.hdc5,
+                course.hdc6,
+                course.hdc7,
+                course.hdc8,
+                course.hdc9,
+
+            ]
+        }
+    }
+    @FieldResolver(() => NineData)
+    back(@Root() course: Course): NineData {
+        return {
+            par: [
+                course.par10,
+                course.par11,
+                course.par12,
+                course.par13,
+                course.par14,
+                course.par15,
+                course.par16,
+                course.par17,
+                course.par18,
+            ],
+            hdc: [
+                course.hdc10,
+                course.hdc11,
+                course.hdc12,
+                course.hdc13,
+                course.hdc14,
+                course.hdc15,
+                course.hdc16,
+                course.hdc17,
+                course.hdc18,
+
+            ]
+        }
+    }
+
     @Query(() => CourseResponse)
     async course(
         @Arg('courseId') courseId: number,
@@ -173,7 +134,14 @@ export class CourseResolver {
                     ],
                 };
             }
-            return e.message;
+            return {
+                errors: [
+                    {
+                        field: 'error',
+                        message: e.message
+                    }
+                ]
+            }
         }
         return { course };
     }

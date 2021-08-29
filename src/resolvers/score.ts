@@ -1,72 +1,10 @@
-import { FieldResolver, InputType, Query, Resolver, Root } from 'type-graphql';
-import { Arg, Ctx, Field, Mutation, ObjectType } from 'type-graphql';
+import { FieldResolver, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Ctx, Mutation } from 'type-graphql';
 import { MyContext } from '../types';
 import { getConnection } from 'typeorm';
-import { FieldError } from './user';
 import { Score } from '../entities/Score';
 import { User } from '../entities/User';
-
-@InputType()
-class ScoreOptions {
-    @Field()
-    courseId!: number;
-    @Field({ nullable: true })
-    hole1: number;
-    @Field({ nullable: true })
-    hole2: number;
-    @Field({ nullable: true })
-    hole3: number;
-    @Field({ nullable: true })
-    hole4: number;
-    @Field({ nullable: true })
-    hole5: number;
-    @Field({ nullable: true })
-    hole6: number;
-    @Field({ nullable: true })
-    hole7: number;
-    @Field({ nullable: true })
-    hole8: number;
-    @Field({ nullable: true })
-    hole9: number;
-    @Field({ nullable: true })
-    hole10: number;
-    @Field({ nullable: true })
-    hole11: number;
-    @Field({ nullable: true })
-    hole12: number;
-    @Field({ nullable: true })
-    hole13: number;
-    @Field({ nullable: true })
-    hole14: number;
-    @Field({ nullable: true })
-    hole15: number;
-    @Field({ nullable: true })
-    hole16: number;
-    @Field({ nullable: true })
-    hole17: number;
-    @Field({ nullable: true })
-    hole18: number;
-    @Field()
-    date!: Date;
-}
-
-@ObjectType()
-class ScoreResponse {
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
-
-    @Field(() => Score, { nullable: true })
-    score?: Score;
-}
-
-@ObjectType()
-class ScoresResponse {
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
-
-    @Field(() => [Score], { nullable: true })
-    scores?: Score[];
-}
+import { ScoresResponse, ScoreResponse, ScoreOptions, NineData } from './types';
 
 @Resolver(Score)
 export class ScoreResolver {
@@ -75,9 +13,70 @@ export class ScoreResolver {
         return userLoader.load(score.playerId);
     }
 
-    @FieldResolver(() => Score)
-    course(@Root() score: Score, @Ctx() { courseLoader }: MyContext) {
-        return courseLoader.load(score.courseId);
+    @FieldResolver(() => String)
+    async courseName(@Root() score: Score, @Ctx() { courseLoader }: MyContext) {
+        const course = await courseLoader.load(score.courseId);
+        return course.name;
+    }
+
+    @FieldResolver(() => NineData)
+    async front(@Root() score: Score, @Ctx() { courseLoader }: MyContext): NineData {
+        const course = await courseLoader.load(score.courseId);
+        return {
+            par: [
+                course.par1,
+                course.par2,
+                course.par3,
+                course.par4,
+                course.par5,
+                course.par6,
+                course.par7,
+                course.par8,
+                course.par9,
+            ],
+            hdc: [
+                course.hdc1,
+                course.hdc2,
+                course.hdc3,
+                course.hdc4,
+                course.hdc5,
+                course.hdc6,
+                course.hdc7,
+                course.hdc8,
+                course.hdc9,
+                
+            ]
+        }
+    }
+
+    @FieldResolver(() => NineData)
+    async back(@Root() score: Score, @Ctx() { courseLoader }: MyContext): NineData {
+        const course = await courseLoader.load(score.courseId);
+        return {
+            par: [
+                course.par10,
+                course.par11,
+                course.par12,
+                course.par13,
+                course.par14,
+                course.par15,
+                course.par16,
+                course.par17,
+                course.par18,
+            ],
+            hdc: [
+                course.hdc10,
+                course.hdc11,
+                course.hdc12,
+                course.hdc13,
+                course.hdc14,
+                course.hdc15,
+                course.hdc16,
+                course.hdc17,
+                course.hdc18,
+                
+            ]
+        }
     }
 
     @Query(() => ScoresResponse)
